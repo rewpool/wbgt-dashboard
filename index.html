@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WBGT Premium Tactical Command Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #060913;          
+  --s0: #0a0f1d;          
+  --s1: #11182c;          
+  --s2: rgba(255, 255, 255, 0.06);
+  --s3: rgba(255, 255, 255, 0.12);
+  --cyan: #00f0ff;        
+  --cyan-dim: rgba(0, 240, 255, 0.08); 
+  --cyan-bd: rgba(0, 240, 255, 0.25);  
+  --text-primary: #f3f7fc; 
+  --text-dim: #7e8ea8;     
+  
+  /* Premium Soft Flags */
+  --c-green: #00e676;
+  --c-yellow: #ffea00;
+  --c-orange: #ff9100;
+  --c-red: #ff1744;
+  
+  --radius: 20px;
+  --rsm: 12px;
+}
+
+body {
+  font-family: 'Kanit', sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 24px; gap: 16px;
+}
+
+/* Premium Control Bar */
+.toolbar {
+  width: 100%; max-width: 1280px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 16px;
+  background: rgba(10, 15, 29, 0.6); backdrop-filter: blur(20px);
+  border: 1px solid var(--s2); border-radius: var(--radius); padding: 14px 24px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+.t-status { display:flex;align-items:center;gap:12px;flex:1;min-width:260px;font-size:14px;color:var(--text-dim); font-weight:400; }
+.dot { width:8px; height:8px; border-radius:50%; background:var(--c-green); flex-shrink:0; box-shadow: 0 0 12px var(--c-green); animation:pulse 2s ease-in-out infinite; }
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(0.8)}}
+
+/* Operational Buttons */
+.btn {
+  display:flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;
+  border-radius:var(--rsm); border:1px solid;
+  font-size:14px; font-weight:600; font-family: 'Kanit', sans-serif;
+  cursor:pointer; transition:all .25s ease; white-space:nowrap;
+  flex: 1; max-width: 200px;
+}
+@media (max-width: 576px) { .btn { max-width: 100%; } }
+.btn-r{background:var(--cyan-dim); color:var(--cyan); border-color:var(--cyan-bd);}
+.btn-r:hover{background:rgba(0, 240, 255, 0.15); border-color:var(--cyan); transform: translateY(-1px);}
+.btn-d{background:rgba(255,255,255,0.03); color:var(--text-primary); border-color:var(--s2);}
+.btn-d:hover{background:rgba(255,255,255,0.07); border-color:var(--s3); transform: translateY(-1px);}
+
+/* Core Framework */
+#infographic {
+  width:100%; max-width:1280px;
+  background:var(--s0); border:1px solid var(--s2);
+  border-radius:28px; overflow:hidden;
+  box-shadow: 0 30px 70px rgba(0,0,0,0.7);
+}
+
+/* PREMIUM BLURRED HEADER */
+.hdr {
+  background: linear-gradient(135deg, #0e162a 0%, #060a14 100%);
+  border-bottom: 1px solid var(--s2);
+  padding: 32px;
+  display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 24px;
+}
+.hdr-emblem {
+  width:64px; height:64px; border-radius:18px;
+  background: rgba(255,255,255,0.03); border:1px solid var(--s2);
+  display:flex; align-items:center; justify-content:center;
+  font-size:32px; flex-shrink:0;
+}
+.hdr-main { flex: 2; min-width: 280px; }
+.hdr-title { font-size:26px; font-weight:800; color:var(--text-primary); letter-spacing: 0.5px; }
+.hdr-sub { font-size:14px; color:var(--text-dim); margin-top:6px; display:flex; flex-wrap:wrap; align-items:center; gap:12px; }
+
+/* High-End Glass Cards */
+.dt-box, .hdr-fc-box, .hi-badge {
+  background: rgba(17, 24, 44, 0.45); border: 1px solid var(--s2);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--radius); padding: 16px 20px;
+  text-align: center; flex: 1; min-width: 210px; height: 115px;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.dt-label, .hdr-fc-lbl, .hi-lbl { font-size:11px; font-weight:700; color:var(--text-dim); letter-spacing:1px; margin-bottom:6px; text-transform: uppercase; }
+.dt-date { font-size:13px; color:var(--text-primary); font-weight:400; margin-bottom:2px; }
+.dt-clock { font-size:32px; font-weight:800; color:var(--text-primary); line-height:1; }
+.dt-sec { font-size:18px; color:var(--text-dim); font-weight: 500; }
+.dt-loc { font-size:11px; color:var(--cyan); margin-top:6px; font-weight:500; }
+
+.hdr-fc-box { gap: 2px; }
+.hdr-fc-main { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.hdr-fc-icon { font-size: 32px; }
+.hdr-fc-temp { font-size: 28px; font-weight: 700; color: #fff; }
+.hdr-fc-det { font-size: 11px; color: var(--text-dim); display: flex; justify-content: space-between; gap: 10px; border-top: 1px solid var(--s2); margin-top: 6px; padding-top: 6px; width: 100%; }
+
+.hi-badge { background: rgba(255, 23, 68, 0.02); border-color: rgba(255, 23, 68, 0.2); }
+.hi-lbl { color: var(--text-dim); }
+.hi-val { font-size:36px; font-weight:800; color:var(--c-red); line-height:1; margin:2px 0; }
+.hi-risk { font-size:12px; color:#ffb3c1; font-weight:600; letter-spacing: 0.5px; }
+
+/* LAYOUT STRUCTURING */
+.body-grid { display: grid; grid-template-columns: 410px 1fr; }
+@media (max-width: 1024px) { .body-grid { grid-template-columns: 1fr; } .lcol { border-right: none !important; border-bottom: 1px solid var(--s2); } }
+
+/* LEFT ENGINE: HERO METRICS */
+.lcol { border-right: 1px solid var(--s2); display: flex; flex-direction: column; background: #080d1a; }
+.sec-hd {
+  font-size:13px; font-weight:700; color:var(--text-dim); letter-spacing:1px;
+  padding:16px 24px; background:rgba(255,255,255,0.01);
+  border-bottom:1px solid var(--s2); display:flex; align-items:center; gap:8px;
+  text-transform: uppercase;
+}
+
+/* Dashboard Metric Grid */
+.sg { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 24px; }
+@media (max-width: 400px) { .sg { grid-template-columns: 1fr; } .sc.wide { grid-column: unset; flex-direction: column; gap: 16px; } .sdiv { display: none; } }
+.sc { background:rgba(255,255,255,0.02); border:1px solid var(--s2); border-radius:var(--radius); padding:18px; display:flex; flex-direction:column; gap:4px; transition: all 0.25s ease; }
+.sc:hover { border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.04); }
+.sc.dng { background: rgba(255, 23, 68, 0.01); border-color: rgba(255, 23, 68, 0.2); box-shadow: 0 0 30px rgba(255, 23, 68, 0.08); }
+.sc.wide { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-around; padding: 20px; background: rgba(255,255,255,0.01); }
+.sl { font-size:11px; color:var(--text-dim); font-weight:600; letter-spacing:0.5px; }
+.sv { font-size:34px; font-weight:700; color:var(--text-primary); line-height:1.1; }
+.sv.dv { color:var(--c-red); }
+.su { font-size:14px; color:var(--text-dim); margin-left: 4px; font-weight: 400; }
+.ss { font-size:12px; color:var(--text-dim); margin-top:2px; font-weight:300; }
+.sdiv { width:1px; height:40px; background:var(--s2); }
+
+/* TOP-TIER ARCH GAUGE CODES */
+.gauge-sec { padding: 24px; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,255,255,0.01); border-top: 1px solid var(--s2); position: relative; }
+.gauge-hd { width: 100%; font-size:13px; font-weight:700; color:var(--text-dim); margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; }
+.gauge-container { position: relative; width: 220px; height: 115px; overflow: hidden; margin-bottom: 10px; }
+.gauge-render { width: 220px; height: 220px; border-radius: 50%; border: 14px solid #141b2d; position: absolute; top: 0; left: 0; box-sizing: border-box; }
+.gauge-color-bar { width: 220px; height: 220px; border-radius: 50%; border: 14px solid transparent; position: absolute; top: 0; left: 0; box-sizing: border-box; transform: rotate(-45deg); border-left-color: var(--c-green); border-top-color: var(--c-yellow); } /* Dynamic placeholder */
+.gauge-center-data { position: absolute; bottom: 0; left: 0; width: 100%; text-align: center; display: flex; flex-direction: column; align-items: center; }
+.gauge-center-val { font-size: 40px; font-weight: 900; color: #fff; line-height: 1; }
+.gauge-center-lbl { font-size: 11px; color: var(--text-dim); font-weight: 600; margin-top: 4px; letter-spacing: 0.5px; }
+
+/* Elegant Linear Track Indicator */
+.track-bar { width: 100%; height: 6px; background: #131929; border-radius: 10px; margin-top: 15px; position: relative; overflow: hidden; }
+.track-fill { height: 100%; width: 50%; background: linear-gradient(to right, var(--c-green), var(--c-yellow), var(--c-orange), var(--c-red)); border-radius: 10px; transition: width 1s ease; }
+.gauge-labels { width: 100%; display: flex; justify-content: space-between; margin-top: 10px; padding: 0 4px; }
+.gauge-labels span { font-size: 11px; color: var(--text-dim); font-weight: 500; }
+
+/* RIGHT PANEL: DETAILS & MATRIX */
+.rcol { display: flex; flex-direction: column; min-width: 0; background: var(--s0); }
+.alert-strip { margin:24px; background: rgba(255, 23, 68, 0.02); border: 1px solid rgba(255, 23, 68, 0.15); border-radius:var(--radius); padding: 20px; display:flex; gap:16px; align-items:flex-start; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+.a-icon { font-size:24px; flex-shrink:0; }
+.a-title { font-size:15px; font-weight:700; color:var(--c-red); margin-bottom:6px; letter-spacing: 0.3px; }
+.a-text { font-size:14px; color:#e2e8f0; line-height:1.6; font-weight:300; }
+
+/* Clean Minimalist Table Design */
+.table-wrap { padding: 0 24px 24px; flex: 1; display: flex; flex-direction: column; }
+.table-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 16px; border-radius: var(--radius); border: 1px solid var(--s2); }
+.wt { width:100%; border-collapse:collapse; font-size:14.5px; min-width: 650px; background: rgba(10,15,29,0.3); }
+.wt thead tr { background: rgba(255,255,255,0.01); border-bottom: 1px solid var(--s2); }
+.wt th { font-size:11px; font-weight:600; color:var(--text-dim); padding:16px; text-align:center; letter-spacing:0.8px; text-transform: uppercase; }
+.wt td { padding:18px 16px; text-align:center; color:var(--text-primary); border-bottom: 1px solid var(--s2); vertical-align:middle; line-height:1.5; }
+.wt tbody tr { transition: background .2s ease; }
+.wt tbody tr:hover { background: rgba(255,255,255,0.02); }
+.wt tbody tr.now { background: rgba(0, 240, 255, 0.03); border: 1px solid var(--cyan); box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.05); }
+.wt tbody tr:last-child td { border-bottom:none; }
+
+/* Soft Modern Flag Badges */
+.flag { display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:6px 14px; border-radius:30px; font-size:13px; font-weight:600; width: 110px; }
+.fg { background: rgba(0, 230, 118, 0.08); color: var(--c-green); border: 1px solid rgba(0, 230, 118, 0.2); }
+.fy { background: rgba(255, 234, 0, 0.08); color: var(--c-yellow); border: 1px solid rgba(255, 234, 0, 0.2); }
+.fo { background: rgba(255, 145, 0, 0.08); color: var(--c-orange); border: 1px solid rgba(255, 145, 0, 0.2); }
+.fr { background: rgba(255, 23, 68, 0.08); color: var(--c-red); border: 1px solid rgba(255, 23, 68, 0.2); }
+.fdot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
+.dg { background: var(--c-green); } .dy { background: var(--c-yellow); } .do { background: var(--c-orange); } .dr { background: var(--c-red); }
+
+.wn { font-weight:700; color:#ffffff; font-size:16px; }
+.tc { font-size:14px; color:var(--text-primary); font-weight: 600; white-space: nowrap; }
+.gt { font-size:13.5px; color:var(--text-dim); text-align:left; line-height:1.6; font-weight: 300; }
+
+/* Minimalist Grid Footer */
+.bot { display:grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--s2); background: #060a14; }
+@media (max-width: 992px) { .bot { grid-template-columns: repeat(2, 1fr); } .mcard { border-bottom: 1px solid var(--s2); } .mcard:nth-child(2) { border-right: none !important; } }
+@media (max-width: 576px) { .bot { grid-template-columns: 1fr; } .mcard { border-right: none !important; } .mcard:last-child { border-bottom: none; } }
+.mcard { padding:24px; border-right: 1px solid var(--s2); position: relative; }
+.mn { font-size:11px; color:var(--cyan); font-weight:700; letter-spacing:0.5px; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+.mc { width:22px; height:22px; border-radius:50%; background:rgba(255,255,255,0.03); border:1px solid var(--s2); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color:#fff; flex-shrink:0; }
+.mt { font-size:16px; font-weight:600; color:var(--text-primary); margin-bottom:6px; }
+.md { font-size:13px; color:var(--text-dim); line-height:1.6; font-weight:300; }
+.mhl { color: #ff6b8b; font-weight:500; }
+
+/* FOOTER COMPLIANCE STAMP */
+.footer { background: #04070e; border-top: 1px solid var(--s2); padding:32px 24px; text-align:center; font-size:14px; font-weight:400; color:var(--text-dim); line-height:1.8; }
+.footer strong { color: var(--cyan); font-weight: 600; }
+
+/* Global Overlay */
+.ov { position:fixed; inset:0; background:#050811; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; z-index:999; }
+.ov.hidden { display:none; }
+.spin { width:44px; height:44px; border-radius:50%; border:2px solid rgba(255,255,255,0.05); border-top-color:var(--cyan); animation:spin .7s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg) } }
+.ov p { font-size:15px; color:var(--text-dim); font-weight: 400; }
+</style>
+</head>
+<body>
+
+<div class="ov" id="ov">
+  <div class="spin"></div>
+  <p>กำลังเชื่อมต่อข้อมูลสภาพอากาศสากล...</p>
+</div>
+
+<div class="toolbar">
+  <div class="t-status">
+    <div class="dot"></div>
+    <span id="statusTxt">กำลังเชื่อมต่อสถานีหลัก...</span>
+  </div>
+  <button class="btn btn-r" onclick="fetchWeather()">⟳ อัปเดตข้อมูล</button>
+  <button class="btn btn-d" onclick="dlImg(event)">↓ ดาวน์โหลดภาพ PNG</button>
+</div>
+
+<div id="infographic">
+
+  <div class="hdr">
+    <div class="hdr-emblem">🌤️</div>
+    <div class="hdr-main">
+      <div class="hdr-title">ระบบเฝ้าระวังดัชนีความร้อน &amp; WBGT</div>
+      <div class="hdr-sub">
+          <span id="hdrDate" style="color:var(--text-dim)">—</span>
+      </div>
+    </div>
+
+    <div class="dt-box">
+      <div class="dt-label">เวลาปัจจุบัน</div>
+      <div class="dt-date" id="dtDate">—</div>
+      <div class="dt-clock"><span id="dtHM">00:00</span><span class="dt-sec" id="dtS">:00</span></div>
+      <div class="dt-loc">GMT+7 · LIVE DATA FEED</div>
+    </div>
+
+    <div class="hdr-fc-box">
+      <div class="hdr-fc-lbl">พยากรณ์อากาศวันนี้</div>
+      <div class="hdr-fc-main">
+        <div class="hdr-fc-icon" id="fcIcon">☀️</div>
+        <div class="hdr-fc-temp"><span id="fcMaxT">—</span>° / <span id="fcMinT" style="color:var(--text-dim)">—</span>°</div>
+      </div>
+      <div class="hdr-fc-det">
+        <div><span id="fcDesc" style="font-weight:400; color:var(--text-primary)">—</span></div>
+        <div>โอกาสฝน: <strong style="color:var(--cyan); font-weight:500;"><span id="fcRain">—</span>%</strong></div>
+      </div>
+    </div>
+
+    <div class="hi-badge">
+      <div class="hi-lbl">HEAT INDEX (ดัชนีความร้อน)</div>
+      <div class="hi-val"><span id="hiH">—</span>°C</div>
+      <div class="hi-risk">อันตรายระดับสูงสุด</div>
+    </div>
+  </div>
+
+  <div class="body-grid">
+    <div class="lcol">
+      <div class="sec-hd">🎛️ ตรวจวัดค่าปัจจุบัน</div>
+      <div class="sg">
+        <div class="sc">
+          <div class="sl">อุณหภูมิปัจจุบัน</div>
+          <div class="sv"><span id="tNow">—</span><span class="su">°C</span></div>
+          <div class="ss" id="feels">รู้สึกจริง —°C</div>
+        </div>
+        <div class="sc dng">
+          <div class="sl">HEAT INDEX</div>
+          <div class="sv dv"><span id="hiS">—</span><span class="su">°C</span></div>
+          <div class="ss">ระดับวิกฤตความร้อนสะสม</div>
+        </div>
+        <div class="sc">
+          <div class="sl">HUMIDITY (ความชื้น)</div>
+          <div class="sv"><span id="humN">—</span><span class="su">%</span></div>
+          <div class="ss" id="humD">—</div>
+        </div>
+        <div class="sc">
+          <div class="sl">WIND SPEED (ความเร็วลม)</div>
+          <div class="sv"><span id="wndN">—</span><span class="su"> กม./ชม.</span></div>
+          <div class="ss" id="wndD">—</div>
+        </div>
+        <div class="sc wide">
+          <div style="text-align:center">
+            <div class="sl">อุณหภูมิสูงสุดวันนี้</div>
+            <div style="font-size:22px;color:var(--c-red);font-weight:700;line-height:1"><span id="maxT">—</span>°C</div>
+            <div class="ss" id="minT" style="font-weight:400;">ต่ำสุด —°C</div>
+          </div>
+          <div class="sdiv"></div>
+          <div style="text-align:center">
+            <div class="sl">UV INDEX (ดัชนียูวี)</div>
+            <div style="font-size:22px;color:var(--c-yellow);font-weight:700;line-height:1"><span id="uvN">—</span></div>
+            <div class="ss" style="font-weight:400;">รุนแรงมาก</div>
+          </div>
+          <div class="sdiv"></div>
+          <div style="text-align:center">
+            <div class="sl">โอกาสเกิดฝน</div>
+            <div style="font-size:22px;color:var(--cyan);font-weight:700;line-height:1"><span id="rnP">—</span>%</div>
+            <div class="ss" style="font-weight:400;">ช่วงบ่าย-ค่ำ</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gauge-sec">
+        <div class="gauge-hd">
+          <span>📊 ค่าดัชนี WBGT ปัจจุบัน</span>
+        </div>
+        <div class="gauge-container">
+          <div class="gauge-render"></div>
+          <div class="gauge-color-bar" id="archGaugeColor" style="border-left-color: var(--c-green); border-top-color: var(--c-yellow);"></div>
+          <div class="gauge-center-data">
+            <div class="gauge-center-val"><span id="wbgtN">—</span>°C</div>
+            <div class="gauge-center-lbl">CORE DATA</div>
+          </div>
+        </div>
+        <div class="track-bar">
+          <div class="track-fill" id="trackFill" style="width: 50%;"></div>
+        </div>
+        <div class="gauge-labels">
+          <span>🟢 28°C</span><span>🟡 32°C</span><span>🔴 33°C</span><span>🟠 35°C</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="rcol">
+      <div class="alert-strip">
+        <div class="a-icon">⚠️</div>
+        <div>
+          <div class="a-title">การประเมินความเสี่ยง: สภาวะความชื้นสะสมหนาแน่น</div>
+          <div class="a-text">ความชื้นสัมพัทธ์ในอากาศที่สูงเกินเกณฑ์จะลดทอนประสิทธิภาพการระเหยของเหงื่อ ส่งผลให้เกิดความร้อนสะสมในร่างกายเพิ่มขึ้นแบบทวีคูณ ให้บังคับใช้ <strong style="color:var(--cyan); font-weight:500;">มาตรการป้องกันโรคลมร้อน (Heatstroke)</strong> ในพื้นที่การทำงานและพื้นที่ฝึกทันที</div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <div class="sec-hd" style="margin:0 -24px; padding:16px 24px; border-radius: var(--radius) var(--radius) 0 0; background: rgba(255,255,255,0.01);">🚩 ตารางพยากรณ์เกณฑ์ธงสัญญาณและแนวทางปฏิบัติรายชั่วโมง</div>
+        <div class="table-scroll">
+          <table class="wt">
+            <thead>
+              <tr>
+                <th style="width:150px">ช่วงเวลา</th>
+                <th style="width:160px">เกณฑ์ธงสัญญาณ</th>
+                <th style="width:140px">ค่าเฉลี่ย WBGT (°C)</th>
+                <th>แนวทางปฏิบัติการควบคุมวงรอบการฝึก</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr id="r08">
+                <td class="tc">08:00 – 10:00<br><span style="font-size:11px;color:var(--text-dim)">ช่วงเช้า (MORNING)</span></td>
+                <td id="flag08">—</td>
+                <td class="wn" id="val08">—</td>
+                <td class="gt" id="guide08">กำลังตรวจสอบสภาพบรรยากาศ...</td>
+              </tr>
+              <tr id="r10">
+                <td class="tc">10:00 – 13:00<br><span style="font-size:11px;color:var(--text-dim)">ช่วงเที่ยง (MIDDAY)</span></td>
+                <td id="flag10">—</td>
+                <td class="wn" id="val10">—</td>
+                <td class="gt" id="guide10">กำลังตรวจสอบสภาพบรรยากาศ...</td>
+              </tr>
+              <tr id="r13">
+                <td class="tc">13:00 – 16:30<br><span style="font-size:11px;color:var(--text-dim)">ช่วงบ่าย (AFTERNOON)</span></td>
+                <td id="flag13">—</td>
+                <td class="wn" id="val13">—</td>
+                <td class="gt" id="guide13">กำลังตรวจสอบสภาพบรรยากาศ...</td>
+              </tr>
+              <tr id="r16">
+                <td class="tc">16:30 – 18:00<br><span style="font-size:11px;color:var(--text-dim)">ช่วงเย็น (EVENING)</span></td>
+                <td id="flag16">—</td>
+                <td class="wn" id="val16">—</td>
+                <td class="gt" id="guide16">กำลังตรวจสอบสภาพบรรยากาศ...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bot">
+    <div class="mcard">
+      <div class="mn"><div class="mc">1</div>HYDRATION</div>
+      <div class="mt">วินัยการเติมน้ำ</div>
+      <div class="md">บังคับแจกจ่ายน้ำดื่มทุกๆ 15 นาที กำชับห้ามรอให้เกิดอาการกระหายน้ำ และสังเกตสีปัสสาวะของกำลังพล</div>
+    </div>
+    <div class="mcard">
+      <div class="mn"><div class="mc">2</div>COOLING STATIONS</div>
+      <div class="mt">จุดลดอุณหภูมิ</div>
+      <div class="md"><span class="mhl">ควบคุมเข้มงวดเมื่อเข้าสู่ธงส้ม/แดง</span><br>จัดเตรียมผ้าแช่น้ำแข็ง ถังแช่แขน (Arm Immersion) และพัดลมระบายอากาศประจำสถานี</div>
+    </div>
+    <div class="mcard">
+      <div class="mn"><div class="mc">3</div>BUDDY MONITOR</div>
+      <div class="mt">ระบบตรวจคู่หู</div>
+      <div class="md">สั่งการเฝ้าระวังอาการร่วมกัน หากพบกำลังพลมีอาการหน้ามืด ตะคริว หรือสับสน ให้ตัดแยกเข้าพื้นที่ร่มทันที</div>
+    </div>
+    <div class="mcard">
+      <div class="mn"><div class="mc">4</div>DRESS CODE</div>
+      <div class="mt">ปรับผ่อนเครื่องแต่งกาย</div>
+      <div class="md">พิจารณาให้ปลดเปลื้องอุปกรณ์หนัก หรือเปิดคอเสื้อในระหว่างช่วงเวลาพัก เพื่อเพิ่มอัตราการระบายความร้อน</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    "สภาพอากาศร้อนชื้นจัดส่งผลกระทบโดยตรงต่อความปลอดภัยของกำลังพล<br>
+    การยึดมั่นในเกณฑ์เวลาพัก-ฝึกตามสัญญาณธงอย่างเคร่งครัด ถือเป็นมาตรการสูงสุดในการรักษาอำนาจกำลังรบภักดี<br>
+    <strong>ภารกิจสำเร็จลุล่วง ภายใต้ความปลอดภัยของกำลังพลทุกคน</strong>"
+  </div>
+</div>
+
+<script>
+const LAT=13.7563,LON=100.5018; 
+const DAYS=['วันอาทิตย์','วันจันทร์','วันอังคาร','วันพุธ','วันพฤหัสบดี','วันศุกร์','วันเสาร์'];
+const MONTHS=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const p=n=>String(n).padStart(2,'0');
+const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+
+function formatGlobalDate(d){return`${DAYS[d.getDay()]}ที่ ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()+543}`;}
+
+function HI(T,RH){
+  return Math.round((-8.78469475556+1.61139411*T+2.33854883889*RH
+    -0.14611605*T*RH-0.012308094*T*T-0.0164248277778*RH*RH
+    +0.002211732*T*T*RH+0.00072546*T*RH*RH-0.000003582*T*T*RH*RH)*10)/10;
+}
+function WBGT(T,RH){
+  const e=(RH/100)*6.105*Math.exp(17.27*T/(237.3+T));
+  return Math.round((0.567*T+0.393*e+3.94)*10)/10;
+}
+function needlePct(w){return Math.min(100,Math.max(0,(w-24)/(36-24)*100));}
+
+function getFlagSpecs(wbgt) {
+  if (wbgt <= 28.0) {
+    return {
+      html: '<span class="flag fg"><span class="fdot dg"></span>ธงเขียว</span>',
+      guide: '• ทำการฝึกได้ตามปกติ<br>• การเติมน้ำ: 500 มล. / ชั่วโมง'
+    };
+  } else if (wbgt <= 32.0) {
+    return {
+      html: '<span class="flag fy"><span class="fdot dy"></span>ธงเหลือง</span>',
+      guide: '• เพิ่มความระมัดระวัง: ฝึก 50 นาที / พัก 10 นาที<br>• การเติมน้ำ: อย่างน้อย 750 มล. / ชั่วโมง'
+    };
+  } else if (wbgt <= 32.9) {
+    return {
+      html: '<span class="flag fo"><span class="fdot do"></span>ธงส้ม</span>',
+      guide: '• งดการฝึกจำลองที่หนัก: ฝึก 40 นาที / พัก 20 นาที<br>• การเติมน้ำ: 750 - 1,000 มล. / ชั่วโมง'
+    };
+  } else {
+    return {
+      html: '<span class="flag fr"><span class="fdot dr"></span>ธงแดง</span>',
+      guide: '• ระดับอันตรายวิกฤต: งดการฝึกกลางแจ้งทุกชนิด<br>• บังคับวงรอบพัก: พัก 30 นาทีต่อชั่วโมง · น้ำ: 1 ลิตร / ชม.'
+    };
+  }
+}
+
+function updateArchGauge(wb) {
+  const bar = document.getElementById('archGaugeColor');
+  if(!bar) return;
+  // Calculate balanced rotations for premium arch gauge
+  let deg = -225 + (Math.min(100, Math.max(0, (wb - 24) / 12 * 100)) * 1.8);
+  bar.style.transform = `rotate(${deg}deg)`;
+  
+  if(wb <= 28) {
+    bar.style.borderLeftColor = 'var(--c-green)'; bar.style.borderTopColor = 'var(--s2)';
+  } else if(wb <= 32) {
+    bar.style.borderLeftColor = 'var(--c-green)'; bar.style.borderTopColor = 'var(--c-yellow)';
+  } else if(wb <= 32.9) {
+    bar.style.borderLeftColor = 'var(--c-green)'; bar.style.borderTopColor = 'var(--c-orange)';
+  } else {
+    bar.style.borderLeftColor = 'var(--c-yellow)'; bar.style.borderTopColor = 'var(--c-red)';
+  }
+}
+
+function wIcon(c){
+  if(c===0)return'☀️';if(c<=2)return'🌤️';if(c<=3)return'☁️';
+  if(c<=49)return'🌫️';if(c<=59)return'🌦️';if(c<=69)return'🌧️';
+  if(c<=79)return'🌨️';if(c<=82)return'🌦️';if(c<=99)return'⛈️';return'🌡️';
+}
+function wDesc(c){
+  if(c===0)return'ท้องฟ้าแจ่มใส';if(c<=2)return'มีเมฆบางส่วน';if(c<=3)return'ครึ้มฟ้าครึ้มฝน';
+  if(c<=49)return'หมอกหนา';if(c<=59)return'ฝนตกปรอย';if(c<=69)return'ฝนตกต่อเนื่อง';
+  if(c<=79)return'หิมะ';if(c<=82)return'ฝนตกหนัก';if(c<=99)return'พายุฝนฟ้าคะนอง';return'—';
+}
+function wDir(d){return['ทิศเหนือ','ตะวันออกเฉียงเหนือ','ทิศตะวันตะวันออก','ตะวันออกเฉียงใต้','ทิศใต้','ตะวันตกเฉียงใต้','ทิศตะวันตก','ตะวันตกเฉียงเหนือ'][Math.round(d/45)%8];}
+
+async function fetchWeather(){
+  const ov = document.getElementById('ov');
+  const statusTxt = document.getElementById('statusTxt');
+  ov.classList.remove('hidden');
+  statusTxt.textContent = 'กำลังคำนวณสภาวะมวลอากาศความละเอียดสูง...';
+  
+  try{
+    const url=`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}`
+      +`&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,uv_index`
+      +`&hourly=temperature_2m,relative_humidity_2m`
+      +`&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max`
+      +`&timezone=Asia%2FBangkok&forecast_days=1`; 
+    const res=await fetch(url);
+    if(!res.ok)throw new Error();
+    const d=await res.json();
+    renderUI(d);
+    const n=new Date();
+    statusTxt.textContent = `ระบบทำเชื่อมต่อสำเร็จ · อัปเดตล่าสุดเมื่อ: ${p(n.getHours())}:${p(n.getMinutes())} น.`;
+  }catch(e){
+    statusTxt.innerHTML='<span style="color:var(--c-red)">⚠ เกิดข้อผิดพลาดในข่ายสัญญาณ API — กรุณาตรวจสอบลิงก์สถานี</span>';
+  }
+  ov.classList.add('hidden');
+}
+
+function renderUI(data){
+  const c=data.current, d=data.daily, hData=data.hourly;
+  const T=c.temperature_2m, RH=c.relative_humidity_2m;
+  const hi=HI(T,RH), wb=WBGT(T,RH);
+
+  set('tNow',T.toFixed(1));
+  set('feels',`รู้สึกจริงเสมือน ${c.apparent_temperature.toFixed(1)}°C`);
+  set('hiS',hi.toFixed(1)); set('hiH',hi.toFixed(1));
+  set('humN',RH);
+  set('humD',RH>75?'ความชื้นสะสมหนาแน่นจัด':'ความชื้นปานกลาง');
+  set('wndN',c.wind_speed_10m.toFixed(1));
+  set('wndD', wDir(c.wind_direction_10m));
+  
+  const uv = (c.uv_index??d.uv_index_max[0]).toFixed(0);
+  set('uvN',uv);
+  set('maxT',d.temperature_2m_max[0].toFixed(1));
+  set('minT',`ต่ำสุดวันนี้ ${d.temperature_2m_min[0].toFixed(1)}°C`);
+  set('rnP',d.precipitation_probability_max[0]);
+  
+  set('wbgtN',wb.toFixed(1));
+  document.getElementById('trackFill').style.width=needlePct(wb)+'%';
+  updateArchGauge(wb);
+
+  // Process operational blocks
+  let wb08 = (WBGT(hData.temperature_2m[8], hData.relative_humidity_2m[8]) + WBGT(hData.temperature_2m[9], hData.relative_humidity_2m[9])) / 2;
+  let wb10 = (WBGT(hData.temperature_2m[10], hData.relative_humidity_2m[10]) + WBGT(hData.temperature_2m[11], hData.relative_humidity_2m[11]) + WBGT(hData.temperature_2m[12], hData.relative_humidity_2m[12])) / 3;
+  let wb13 = (WBGT(hData.temperature_2m[13], hData.relative_humidity_2m[13]) + WBGT(hData.temperature_2m[14], hData.relative_humidity_2m[14]) + WBGT(hData.temperature_2m[15], hData.relative_humidity_2m[15]) + WBGT(hData.temperature_2m[16], hData.relative_humidity_2m[16])) / 4;
+  let wb16 = (WBGT(hData.temperature_2m[16], hData.relative_humidity_2m[16]) + WBGT(hData.temperature_2m[17], hData.relative_humidity_2m[17])) / 2;
+
+  set('val08', wb08.toFixed(1));
+  const spec08 = getFlagSpecs(wb08);
+  document.getElementById('flag08').innerHTML = spec08.html;
+  document.getElementById('guide08').innerHTML = spec08.guide;
+
+  set('val10', wb10.toFixed(1));
+  const spec10 = getFlagSpecs(wb10);
+  document.getElementById('flag10').innerHTML = spec10.html;
+  document.getElementById('guide10').innerHTML = spec10.guide;
+
+  set('val13', wb13.toFixed(1));
+  const spec13 = getFlagSpecs(wb13);
+  document.getElementById('flag13').innerHTML = spec13.html;
+  document.getElementById('guide13').innerHTML = spec13.guide;
+
+  set('val16', wb16.toFixed(1));
+  const spec16 = getFlagSpecs(wb16);
+  document.getElementById('flag16').innerHTML = spec16.html;
+  document.getElementById('guide16').innerHTML = spec16.guide;
+
+  // Active Row Identification
+  const h=new Date().getHours()+new Date().getMinutes()/60;
+  ['r08','r10','r13','r16'].forEach(id=>document.getElementById(id).classList.remove('now'));
+  if(h>=8&&h<10)document.getElementById('r08').classList.add('now');
+  else if(h>=10&&h<13)document.getElementById('r10').classList.add('now');
+  else if(h>=13&&h<16.5)document.getElementById('r13').classList.add('now');
+  else if(h>=16.5&&h<18)document.getElementById('r16').classList.add('now');
+
+  document.getElementById('fcIcon').textContent = wIcon(d.weather_code[0]);
+  set('fcMaxT', d.temperature_2m_max[0].toFixed(0));
+  set('fcMinT', d.temperature_2m_min[0].toFixed(0));
+  set('fcDesc', wDesc(d.weather_code[0]));
+  set('fcRain', d.precipitation_probability_max[0]);
+}
+
+function clock(){
+  const n=new Date();
+  document.getElementById('dtHM').textContent=`${p(n.getHours())}:${p(n.getMinutes())}`;
+  document.getElementById('dtS').textContent=`:${p(n.getSeconds())}`;
+  const ds=formatGlobalDate(n);
+  set('dtDate',ds); set('hdrDate',ds);
+}
+clock(); setInterval(clock,1000);
+
+async function dlImg(ev){
+  const btn=ev.currentTarget;
+  btn.textContent='⏳ กำลังเรนเดอร์ภาพระดับ 2K…'; btn.disabled=true;
+  try{
+    const cv=await html2canvas(document.getElementById('infographic'),{scale:2,backgroundColor:'#060913',useCORS:true,logging:false});
+    const a=document.createElement('a');
+    const n=new Date();
+    a.download=`WBGT_CommandReport_${n.getFullYear()+543}${p(n.getMonth()+1)}${p(n.getDate())}.png`;
+    a.href=cv.toDataURL('image/png'); a.click();
+  }catch(e){alert('การดาวน์โหลดผิดพลาด: '+e.message);}
+  btn.textContent='↓ ดาวน์โหลดภาพ PNG'; btn.disabled=false;
+}
+
+fetchWeather();
+setInterval(fetchWeather,10*60*1000);
+</script>
+</body>
+</html>
